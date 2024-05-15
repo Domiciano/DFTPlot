@@ -31,39 +31,40 @@ public class HelloController implements Initializable {
 
         //Señal artificial
 
-        double fs = 50;
+        /*
+        double fs = 1000;
         double duration = 2;
         signal = new double[(int)duration * (int) fs];
         double[] time = new double[(int)duration * (int) fs];
         for (int i = 0; i < duration * fs; i++) {
             time[i] = i / fs;
-            signal[i] = Math.sin(2 * Math.PI * 10 * time[i])+0.1*Math.sin(2 * Math.PI * 20 * time[i]);
-        }
-        signal = DFTUtils.normalize(signal);
-
-
-        /*
-        //Señal real de acelerómetros
-        double fs = 50;
-        signal = loadData();
-        double duration = signal.length/fs;
-        double[] time = new double[signal.length];
-        for (int i = 0; i < signal.length; i++) {
-            time[i] = i / fs;
+            signal[i] = 1*Math.sin(2 * Math.PI * 60 * time[i])+10*Math.sin(2 * Math.PI * 20 * time[i]);
         }
         signal = DFTUtils.normalize(signal);
         */
 
-        double[] spectrum = DFTUtils.dftSpectrum(signal, 50);
-        double[] freqs = DFTUtils.dftFreq(signal, 50);
+
+        //Señal real de acelerómetros
+        int fs = 1000;
+        signal = VoiceRecorder.record(fs);
+        double duration = signal.length/(double) fs;
+        double[] time = new double[signal.length];
+        for (int i = 0; i < signal.length; i++) {
+            time[i] = i / (double) fs;
+        }
+        signal = DFTUtils.normalize(signal);
+
+
+        System.out.println("DFTing...");
+        double[] spectrum = DFTUtils.dftSpectrum(signal);
+        double[] freqs = DFTUtils.dftFreq(signal, fs);
         DecimalFormat df = new DecimalFormat("#.##");
 
+        System.out.println("Graficando...");
         gc = canvas.getGraphicsContext2D();
         canvas.setOnMouseMoved(e -> {
             mx = e.getX();
             my = e.getY();
-            System.out.println(e.getX());
-            System.out.println(e.getY());
         });
 
         //DIBUJO
@@ -99,7 +100,7 @@ public class HelloController implements Initializable {
 
                 });
                 try {
-                    Thread.sleep(20);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

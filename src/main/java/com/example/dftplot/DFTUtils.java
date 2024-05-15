@@ -52,7 +52,7 @@ public class DFTUtils {
         }
     }
 
-    public static double[] dftSpectrum(double[] signal, double samplingFrequency) {
+    public static double[] dftSpectrum(double[] signal) {
         int N = signal.length;
         double[] spectrum = new double[N / 2];
         for (int k = 0; k < N / 2; k++) {
@@ -77,22 +77,35 @@ public class DFTUtils {
         return frequencies;
     }
 
-    public static double[] normalize(double[] signal){
-
+    public static double[] normalize(double[] signal) {
+        // Calcular la media (componente DC) de la señal
         double sum = 0;
-        for(int i=0 ; i<signal.length ; i++){
-            sum += signal[i];
+        for (double value : signal) {
+            sum += value;
         }
-        sum /= signal.length;
+        double mean = sum / signal.length;
 
-        for(int i=0 ; i<signal.length ; i++){
-            signal[i] = signal[i]-sum;
+        // Restar la media de cada muestra para eliminar el componente DC
+        for (int i = 0; i < signal.length; i++) {
+            signal[i] -= mean;
         }
-        double dif = findMax(signal)- findMin(signal);
-        for(int i=0 ; i<signal.length ; i++){
-            signal[i] = signal[i]/dif;
+
+        // Calcular la amplitud máxima de la señal
+        double maxAbs = Math.abs(signal[0]);
+        for (int i = 1; i < signal.length; i++) {
+            double absValue = Math.abs(signal[i]);
+            if (absValue > maxAbs) {
+                maxAbs = absValue;
+            }
         }
+
+        // Dividir cada muestra por la amplitud máxima para normalizar la señal
+        for (int i = 0; i < signal.length; i++) {
+            signal[i] /= maxAbs;
+        }
+
         return signal;
     }
+
 
 }
